@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: #f0f0f0;
+      font-family: Arial, sans-serif;
+      overflow: hidden;
+      touch-action: manipulation;
+    }
+
+    .cake-bg {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: min(200px, 50vw);
+      z-index: -1;
+      opacity: 0.2;
+    }
+
+    .card {
+      position: relative;
+      width: min(300px, 90vw);
+      height: min(400px, 80vh);
+      perspective: 1500px;
+      margin: 20px;
+      touch-action: manipulation;
+    }
+
+    .card-front, .card-inside {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+
+    .card-front {
+      background: linear-gradient(135deg, #ff69b4, #ff1493);
+      transform-origin: left;
+      transition: transform 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 2;
+    }
+
+    .card.open .card-front {
+      transform: rotateY(-180deg);
+    }
+
+    .card-inside {
+      background: white;
+      padding: min(30px, 5vw);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      z-index: 1;
+      font-size: min(16px, 4vw);
+    }
+
+    .front-text {
+      color: white;
+      text-align: center;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .front-text h1 {
+      font-size: min(32px, 8vw);
+      margin: 10px 0;
+    }
+
+    .message {
+      color: #333;
+      line-height: 1.6;
+      font-size: min(16px, 4vw);
+    }
+
+    .message h2 {
+      font-size: min(24px, 6vw);
+      margin-bottom: 15px;
+    }
+
+    .decorations {
+      font-size: min(24px, 6vw);
+      margin: 15px 0;
+      animation: bounce 2s infinite;
+    }
+
+    .firework {
+      position: fixed;
+      width: min(6px, 2vw);
+      height: min(6px, 2vw);
+      border-radius: 50%;
+      animation: explode 1.5s ease-out forwards;
+      pointer-events: none;
+    }
+
+    @keyframes explode {
+      0% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      50% {
+        opacity: 1;
+      }
+      100% {
+        transform: scale(30);
+        opacity: 0;
+      }
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .click-hint {
+      position: absolute;
+      bottom: 20px;
+      font-size: min(14px, 3.5vw);
+      color: white;
+      animation: pulse 2s infinite;
+    }
+
+    /* Agregamos estilos para el control de audio */
+    .audio-control {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.8);
+      padding: 10px;
+      border-radius: 50%;
+      cursor: pointer;
+      z-index: 1000;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    .audio-control:hover {
+      background: rgba(255, 255, 255, 1);
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    @media (max-width: 480px) {
+      .click-hint {
+        bottom: 10px;
+      }
+      
+      .card-inside {
+        padding: 15px;
+      }
+
+      .audio-control {
+        bottom: 10px;
+        right: 10px;
+      }
+    }
+  </style>
+</head>
+<body ontouchstart="">
+  <!-- Audio con múltiples fuentes para mejor compatibilidad -->
+  <audio id="birthdayAudio" preload="auto">
+    <source src="audio/FELIZ CUMPLEAÑOS ORIGINAL - Versión en español  ♪♫.mp3" type="audio/mpeg">
+    Tu navegador no soporta el elemento de audio.
+  </audio>
+
+  <!-- Botón de control de audio -->
+  <div class="audio-control" id="audioControl" title="Controlar música">
+    🔈
+  </div>
+
+  <div class="cake-bg">🎂</div>
+  <div class="card" id="birthdayCard">
+    <div class="card-front">
+      <div class="front-text">
+        <div class="decorations">🎁 ✨ 🎈</div>
+        <h1>¡Feliz<br>Cumpleaños! Milagros</h1>
+        <div class="decorations">🎂 ✨ 🎉</div>
+      </div>
+      <div class="click-hint">Toca para abrir ✨</div>
+    </div>
+    <div class="card-inside">
+      <div class="message">
+        <h2>¡Feliz Cumpleaños<br>Querida Hermana!</h2>
+        <div class="decorations">🎂 ✨ 🎈</div>
+        <p>En este día tan especial,<br>
+           quiero desearte un cumpleaños<br>
+           mágico y lleno de alegría.</p>
+        <p>Que cada momento esté lleno<br>
+           de sonrisas, amor y buenos deseos.<br>
+           Eres una hermana increíble.</p>
+        <p>¡Te quiero muchísimo!</p>
+        <div class="decorations">🎉 ✨ 🎁</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const card = document.getElementById('birthdayCard');
+      const audio = document.getElementById('birthdayAudio');
+      const audioControl = document.getElementById('audioControl');
+      let isPlaying = false;
+
+      // Control de audio
+      function toggleAudio() {
+        if (isPlaying) {
+          audio.pause();
+          audioControl.textContent = '🔈';
+        } else {
+          audio.play().catch(function(error) {
+            console.log("No se pudo reproducir el audio:", error);
+          });
+          audioControl.textContent = '🔊';
+        }
+        isPlaying = !isPlaying;
+      }
+
+      // Reiniciar audio cuando termina
+      audio.addEventListener('ended', function() {
+        audio.currentTime = 0;
+        if (isPlaying) {
+          audio.play().catch(function(error) {
+            console.log("No se pudo reiniciar el audio:", error);
+          });
+        }
+      });
+
+      // Soporte para clic y toque en el control de audio
+      audioControl.addEventListener('click', function(e) {
+        e.stopPropagation();
+        toggleAudio();
+      });
+      
+      // Función para abrir la tarjeta
+      function openCard() {
+        if (!card.classList.contains('open')) {
+          card.classList.add('open');
+          createFireworks();
+          // Intentamos reproducir el audio solo si no está reproduciéndose
+          if (!isPlaying) {
+            toggleAudio();
+          }
+        }
+      }
+
+      function createFireworks() {
+        const total = window.innerWidth < 480 ? 15 : 30;
+        for (let i = 0; i < total; i++) {
+          setTimeout(createFirework, i * 100);
+        }
+      }
+
+      function createFirework() {
+        const firework = document.createElement('div');
+        firework.className = 'firework';
+        firework.style.left = Math.random() * window.innerWidth + 'px';
+        firework.style.top = Math.random() * window.innerHeight + 'px';
+        firework.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+        document.body.appendChild(firework);
+        setTimeout(() => firework.remove(), 1500);
+      }
+
+      // Agregar eventos para móvil y escritorio
+      card.addEventListener('click', openCard);
+      card.addEventListener('touchstart', function(e) {
+        e.preventDefault();
+        openCard();
+      }, false);
+
+      // Precargamos el audio
+      audio.load();
+    });
+
+    // Prevenir zoom en doble toque en iOS
+    document.addEventListener('gesturestart', function(e) {
+      e.preventDefault();
+    });
+  </script>
+</body>
+</html>
